@@ -48,11 +48,12 @@ func init() {
 func loadFlags() {
 	flag.Int64Var(&cols, "cols", 18, "Number of columns in the maze")
 	flag.Int64Var(&rows, "rows", 20, "Number of rows in the maze")
+	flag.Parse()
 }
 
 func create(cols, rows int64) {
 	fmt.Printf("Maze: %d by %d\n", cols, rows)
-	var stack int64
+	var stack []int64
 
 	start := int64(0)
 	count := int64(1)
@@ -73,6 +74,9 @@ func create(cols, rows int64) {
 		s = 0.0
 		w = 0.0
 
+		// if the passage north is not open yet
+		// and it is at least on the second row
+		// and the square above it has never been visited
 		if (maze[current]&north) == 0 && current >= cols && maze[current-cols] == 0 {
 			n = rand.Float64()
 			g = n
