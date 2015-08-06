@@ -81,7 +81,9 @@ func create(cols, rows int64) {
 		if (maze[current]&north) == 0 && current >= cols && maze[current-cols] == 0 {
 			n = rand.Float64()
 			if prev == north {
-				n = (n + float64(twisty)) / (1 + float64(twisty))
+				if twisty < 0 {
+					n = (n + float64(-twisty)) / (1 + float64(-twisty))
+				}
 			}
 			g = n
 			path = north
@@ -100,7 +102,9 @@ func create(cols, rows int64) {
 
 		if (maze[current]&west) == 0 && current%cols != 0 && maze[current-1] == 0 {
 			w = rand.Float64()
-			w = (w + float64(twisty)) / (1 + float64(twisty))
+			if prev == west {
+				w = (w + float64(twisty)) / (1 + float64(twisty))
+			}
 			if w > g {
 				g = w
 				path = west
@@ -109,7 +113,9 @@ func create(cols, rows int64) {
 
 		if (maze[current]&south) == 0 && current < cells-cols-1 && maze[current+cols] == 0 {
 			s = rand.Float64()
-			s = (s + float64(twisty)) / (1 + float64(twisty))
+			if prev == south {
+				s = (s + float64(twisty)) / (1 + float64(twisty))
+			}
 			if s > g {
 				g = s
 				path = south
