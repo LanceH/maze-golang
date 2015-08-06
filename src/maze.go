@@ -48,6 +48,7 @@ func init() {
 func loadFlags() {
 	flag.Int64Var(&cols, "cols", 18, "Number of columns in the maze")
 	flag.Int64Var(&rows, "rows", 20, "Number of rows in the maze")
+	flag.Int64Var(&twisty, "twisty", 0, "Integer >= 0. Higher numbers make straighter hallways")
 	flag.Parse()
 }
 
@@ -62,7 +63,7 @@ func create(cols, rows int64) {
 
 	stack = append(stack, start)
 
-	//prev := int64(0)
+	prev := int64(0)
 
 	n, e, w, s, g := float64(0.0), float64(0.0), float64(0.0), float64(0.0), float64(0.0)
 
@@ -79,12 +80,18 @@ func create(cols, rows int64) {
 		// and the square above it has never been visited
 		if (maze[current]&north) == 0 && current >= cols && maze[current-cols] == 0 {
 			n = rand.Float64()
+			if prev == north {
+				n = (n + float64(twisty)) / (1 + float64(twisty))
+			}
 			g = n
 			path = north
 		}
 
 		if (maze[current]&east) == 0 && current%cols != cols-1 && maze[current+1] == 0 {
 			e = rand.Float64()
+			if prev == east {
+				e = (e + float64(twisty)) / (1 + float64(twisty))
+			}
 			if e > g {
 				g = e
 				path = east
@@ -93,6 +100,7 @@ func create(cols, rows int64) {
 
 		if (maze[current]&west) == 0 && current%cols != 0 && maze[current-1] == 0 {
 			w = rand.Float64()
+			w = (w + float64(twisty)) / (1 + float64(twisty))
 			if w > g {
 				g = w
 				path = west
@@ -101,13 +109,14 @@ func create(cols, rows int64) {
 
 		if (maze[current]&south) == 0 && current < cells-cols-1 && maze[current+cols] == 0 {
 			s = rand.Float64()
+			s = (s + float64(twisty)) / (1 + float64(twisty))
 			if s > g {
 				g = s
 				path = south
 			}
 		}
 
-		//prev = path
+		prev = path
 
 		if path == 0 {
 			current, stack = stack[len(stack)-1], stack[:len(stack)-1]
