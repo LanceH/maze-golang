@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"math/rand"
+	"time"
 )
 
 var cols int64
@@ -18,6 +19,7 @@ var east = int64(2)
 var south = int64(4)
 var west = int64(8)
 
+var seed int64
 var scale int64
 var twisty int64
 
@@ -31,7 +33,7 @@ var asc = true
 
 func main() {
 	fmt.Printf("Maze: %d by %d\n", cols, rows)
-	fmt.Printf("Cells: %d\n", cells)
+	fmt.Printf("Seed: %d, Twisty: %d\n", seed, twisty)
 	create(cols, rows)
 	ascii()
 }
@@ -42,18 +44,23 @@ func init() {
 
 	maze = make([]int64, cells)
 	sol = make([]int64, cells)
-	fmt.Println(cap(sol))
+	if seed != 1 {
+		rand.Seed(seed)
+	} else {
+		rand.Seed(time.Now().UnixNano())
+	}
 }
 
 func loadFlags() {
-	flag.Int64Var(&cols, "cols", 18, "Number of columns in the maze")
-	flag.Int64Var(&rows, "rows", 20, "Number of rows in the maze")
+	flag.Int64Var(&cols, "cols", 8, "Number of columns in the maze")
+	flag.Int64Var(&rows, "rows", 8, "Number of rows in the maze")
 	flag.Int64Var(&twisty, "twisty", 0, "Integer >= 0. Higher numbers make straighter hallways")
+	flag.Int64Var(&seed, "seed", 1, "Integer value for the random seed")
+
 	flag.Parse()
 }
 
 func create(cols, rows int64) {
-	fmt.Printf("Maze: %d by %d\n", cols, rows)
 	var stack []int64
 
 	start := int64(0)
