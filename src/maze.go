@@ -44,11 +44,10 @@ func init() {
 
 	maze = make([]int64, cells)
 	sol = make([]int64, cells)
-	if seed != 1 {
-		rand.Seed(seed)
-	} else {
-		rand.Seed(time.Now().UnixNano())
+	if seed == 1 {
+		seed = time.Now().UnixNano()
 	}
+	rand.Seed(seed)
 }
 
 func loadFlags() {
