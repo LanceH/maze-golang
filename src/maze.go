@@ -44,7 +44,7 @@ func init() {
 	cells = cols * rows
 
 	maze = make([]int64, cells)
-	if seed == 1 {
+	if seed == -1 {
 		seed = time.Now().UnixNano()
 	}
 	rand.Seed(seed)
@@ -55,7 +55,7 @@ func loadFlags() {
 	flag.Int64Var(&rows, "rows", 8, "Number of rows in the maze")
 	flag.Int64Var(&straight, "straight", 0, "Integer >= 0. Higher numbers make straighter hallways")
 	flag.Int64Var(&twisty, "twisty", 0, "Integer >= 0. Higher numbers make twistier hallways")
-	flag.Int64Var(&seed, "seed", 1, "Integer value for the random seed")
+	flag.Int64Var(&seed, "seed", -1, "Integer value for the random seed")
 	flag.BoolVar(&solve, "solve", false, "true to produce a graphic of the solution")
 
 	flag.Parse()
