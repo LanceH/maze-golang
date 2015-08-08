@@ -12,7 +12,7 @@ var rows int64
 var cells int64
 
 var maze []int64
-var sol []int64
+var solution []int64
 
 var north = int64(1)
 var east = int64(2)
@@ -21,6 +21,7 @@ var west = int64(8)
 
 var seed int64
 var scale int64
+var straight int64
 var twisty int64
 
 var header int64
@@ -28,12 +29,12 @@ var footer int64
 
 var output = "output"
 
-var solve = true
+var solve bool
 var asc = true
 
 func main() {
 	fmt.Printf("Maze: %d by %d\n", cols, rows)
-	fmt.Printf("Seed: %d, Twisty: %d\n", seed, twisty)
+	fmt.Printf("Seed: %d, straight: %d\n", seed, straight)
 	create(cols, rows)
 	ascii()
 }
@@ -43,7 +44,6 @@ func init() {
 	cells = cols * rows
 
 	maze = make([]int64, cells)
-	sol = make([]int64, cells)
 	if seed == 1 {
 		seed = time.Now().UnixNano()
 	}
@@ -53,8 +53,10 @@ func init() {
 func loadFlags() {
 	flag.Int64Var(&cols, "cols", 8, "Number of columns in the maze")
 	flag.Int64Var(&rows, "rows", 8, "Number of rows in the maze")
-	flag.Int64Var(&twisty, "twisty", 0, "Integer >= 0. Higher numbers make straighter hallways")
+	flag.Int64Var(&straight, "straight", 0, "Integer >= 0. Higher numbers make straighter hallways")
+	flag.Int64Var(&twisty, "twisty", 0, "Integer >= 0. Higher numbers make twistier hallways")
 	flag.Int64Var(&seed, "seed", 1, "Integer value for the random seed")
+	flag.BoolVar(&solve, "solve", false, "true to produce a graphic of the solution")
 
 	flag.Parse()
 }
@@ -87,7 +89,12 @@ func create(cols, rows int64) {
 		if (maze[current]&north) == 0 && current >= cols && maze[current-cols] == 0 {
 			n = rand.Float64()
 			if prev == north {
-				n = (n + float64(twisty)) / (1 + float64(twisty))
+				if straight > 0 {
+					n = (n + float64(straight)) / (1 + float64(straight))
+				}
+				if twisty > 0 {
+					n = n / (1 + float64(twisty))
+				}
 			}
 			g = n
 			path = north
@@ -96,7 +103,10 @@ func create(cols, rows int64) {
 		if (maze[current]&east) == 0 && current%cols != cols-1 && maze[current+1] == 0 {
 			e = rand.Float64()
 			if prev == east {
-				e = (e + float64(twisty)) / (1 + float64(twisty))
+				e = (e + float64(straight)) / (1 + float64(straight))
+				if twisty > 0 {
+					e = e / (1 + float64(twisty))
+				}
 			}
 			if e > g {
 				g = e
@@ -107,7 +117,10 @@ func create(cols, rows int64) {
 		if (maze[current]&west) == 0 && current%cols != 0 && maze[current-1] == 0 {
 			w = rand.Float64()
 			if prev == west {
-				w = (w + float64(twisty)) / (1 + float64(twisty))
+				w = (w + float64(straight)) / (1 + float64(straight))
+				if twisty > 0 {
+					w = w / (1 + float64(twisty))
+				}
 			}
 			if w > g {
 				g = w
@@ -118,7 +131,10 @@ func create(cols, rows int64) {
 		if (maze[current]&south) == 0 && current < cells-cols-1 && maze[current+cols] == 0 {
 			s = rand.Float64()
 			if prev == south {
-				s = (s + float64(twisty)) / (1 + float64(twisty))
+				s = (s + float64(straight)) / (1 + float64(straight))
+				if twisty > 0 {
+					s = s / (1 + float64(twisty))
+				}
 			}
 			if s > g {
 				g = s
@@ -129,7 +145,7 @@ func create(cols, rows int64) {
 		prev = path
 
 		if path == 0 {
-			current, stack = stack[len(stack)-1], stack[:len(stack)-1]
+			current, stack = stack[len(stack)-2], stack[:len(stack)-1]
 		} else {
 			maze[current] = maze[current] | path
 
@@ -154,10 +170,14 @@ func create(cols, rows int64) {
 			}
 
 			stack = append(stack, current)
+
+			if current == cells-1 && len(solution) == 0 {
+				solution = make([]int64, len(stack))
+				copy(solution, stack)
+			}
 			count++
 		}
 	}
-
 }
 
 func ascii() {
@@ -174,6 +194,8 @@ func ascii() {
 				p(" 0 ")
 			} else if i == rows-1 && j == cols-1 {
 				p(" X ")
+			} else if contains(solution, j+cols*i) && solve {
+				p(" o ")
 			} else {
 				p("   ")
 			}
@@ -208,4 +230,13 @@ func dd() {
 
 func p(a string) {
 	fmt.Print(a)
+}
+
+func contains(path []int64, cell int64) bool {
+	for _, v := range path {
+		if v == cell {
+			return true
+		}
+	}
+	return false
 }
