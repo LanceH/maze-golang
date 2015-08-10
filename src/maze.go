@@ -205,12 +205,6 @@ func toPng() {
 		}
 	}
 
-	for i := 0; i < cols; i++ {
-		for j := 0; j < rows; i++ {
-
-		}
-	}
-
 	if err = png.Encode(f, m); err != nil {
 		fmt.Println(err)
 		os.Exit(2)
