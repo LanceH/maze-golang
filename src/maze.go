@@ -187,6 +187,11 @@ func ascii() {
 	}
 	p("\n")
 
+	var dots = make(map[int64]bool)
+	for _, v := range solution {
+		dots[v] = true
+	}
+
 	for i := int64(0); i < rows; i++ {
 		p("|")
 		for j := int64(0); j < cols; j++ {
@@ -194,7 +199,7 @@ func ascii() {
 				p(" 0 ")
 			} else if i == rows-1 && j == cols-1 {
 				p(" X ")
-			} else if contains(solution, j+cols*i) && solve {
+			} else if dots[j+cols*i] && solve {
 				p(" o ")
 			} else {
 				p("   ")
