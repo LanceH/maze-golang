@@ -236,12 +236,3 @@ func dd() {
 func p(a string) {
 	fmt.Print(a)
 }
-
-func contains(path []int64, cell int64) bool {
-	for _, v := range path {
-		if v == cell {
-			return true
-		}
-	}
-	return false
-}
