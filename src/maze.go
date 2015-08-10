@@ -3,7 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
+	"image"
+	"image/color"
+	"image/png"
 	"math/rand"
+	"os"
 	"time"
 )
 
@@ -30,13 +34,17 @@ var footer int64
 var output = "output"
 
 var solve bool
-var asc = true
+var ascii = false
 
 func main() {
 	fmt.Printf("Maze: %d by %d\n", cols, rows)
 	fmt.Printf("Seed: %d, straight: %d\n", seed, straight)
 	create(cols, rows)
-	ascii()
+	if ascii {
+		toAscii()
+	} else {
+		toPng()
+	}
 }
 
 func init() {
@@ -56,6 +64,7 @@ func loadFlags() {
 	flag.Int64Var(&straight, "straight", 0, "Integer >= 0. Higher numbers make straighter hallways")
 	flag.Int64Var(&twisty, "twisty", 0, "Integer >= 0. Higher numbers make twistier hallways")
 	flag.Int64Var(&seed, "seed", -1, "Integer value for the random seed")
+	flag.BoolVar(&ascii, "ascii", false, "true produces an ascii art version of the maze")
 	flag.BoolVar(&solve, "solve", false, "true to produce a graphic of the solution")
 
 	flag.Parse()
@@ -180,7 +189,35 @@ func create(cols, rows int64) {
 	}
 }
 
-func ascii() {
+func toPng() {
+	f, err := os.OpenFile("output/maze.png", os.O_CREATE|os.O_WRONLY, 0666)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	height := int(rows*4 + 1)
+	width := int(cols*4 + 1)
+	m := image.NewRGBA(image.Rect(0, 0, height, width))
+
+	for i := 0; i < width; i++ {
+		for j := 0; j < height; j++ {
+			m.SetRGBA(i, j, color.RGBA{255, 255, 255, 255})
+		}
+	}
+
+	for i := 0; i < cols; i++ {
+		for j := 0; j < rows; i++ {
+
+		}
+	}
+
+	if err = png.Encode(f, m); err != nil {
+		fmt.Println(err)
+		os.Exit(2)
+	}
+}
+
+func toAscii() {
 	p("+")
 	for i := int64(0); i < cols; i++ {
 		p("---+")
