@@ -64,7 +64,7 @@ func loadFlags() {
 	flag.Int64Var(&straight, "straight", 0, "Integer >= 0. Higher numbers make straighter hallways")
 	flag.Int64Var(&twisty, "twisty", 0, "Integer >= 0. Higher numbers make twistier hallways")
 	flag.Int64Var(&seed, "seed", -1, "Integer value for the random seed")
-	flag.BoolVar(&ascii, "ascii", false, "true produces an ascii art version of the maze")
+	flag.BoolVar(&ascii, "ascii", true, "true produces an ascii art version of the maze")
 	flag.BoolVar(&solve, "solve", false, "true to produce a graphic of the solution")
 
 	flag.Parse()
