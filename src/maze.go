@@ -15,6 +15,9 @@ var cols int64
 var rows int64
 var cells int64
 
+var start int64
+var finish int64
+
 var maze []int64
 var solution []int64
 
@@ -61,6 +64,10 @@ func init() {
 func loadFlags() {
 	flag.Int64Var(&cols, "cols", 8, "Number of columns in the maze")
 	flag.Int64Var(&rows, "rows", 8, "Number of rows in the maze")
+
+	flag.Int64Var(&start, "start", 0, "Number of the cell to start in (zero based)")
+	flag.Int64Var(&finish, "finish", rows*cols-1, "Number of the cell to finish (max = rows * cols - 1)")
+
 	flag.Int64Var(&straight, "straight", 0, "Integer >= 0. Higher numbers make straighter hallways")
 	flag.Int64Var(&twisty, "twisty", 0, "Integer >= 0. Higher numbers make twistier hallways")
 	flag.Int64Var(&seed, "seed", -1, "Integer value for the random seed")
@@ -73,7 +80,6 @@ func loadFlags() {
 func create(cols, rows int64) {
 	var stack []int64
 
-	start := int64(0)
 	count := int64(1)
 	current := start
 	path := int64(0)
@@ -180,7 +186,7 @@ func create(cols, rows int64) {
 
 			stack = append(stack, current)
 
-			if current == cells-1 && len(solution) == 0 {
+			if current == finish && len(solution) == 0 {
 				solution = make([]int64, len(stack))
 				copy(solution, stack)
 			}
@@ -226,9 +232,9 @@ func toAscii() {
 	for i := int64(0); i < rows; i++ {
 		p("|")
 		for j := int64(0); j < cols; j++ {
-			if i == 0 && j == 0 {
+			if start == i*cols+j {
 				p(" 0 ")
-			} else if i == rows-1 && j == cols-1 {
+			} else if finish == i*cols+j {
 				p(" X ")
 			} else if dots[j+cols*i] && solve {
 				p(" o ")
