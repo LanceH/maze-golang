@@ -53,6 +53,9 @@ func main() {
 func init() {
 	loadFlags()
 	cells = cols * rows
+	if finish == start {
+		finish = cells - 1
+	}
 
 	maze = make([]int64, cells)
 	if seed == -1 {
@@ -66,7 +69,7 @@ func loadFlags() {
 	flag.Int64Var(&rows, "rows", 8, "Number of rows in the maze")
 
 	flag.Int64Var(&start, "start", 0, "Number of the cell to start in (zero based)")
-	flag.Int64Var(&finish, "finish", rows*cols-1, "Number of the cell to finish (max = rows * cols - 1)")
+	flag.Int64Var(&finish, "finish", 0, "Number of the cell to finish (max = rows * cols - 1)")
 
 	flag.Int64Var(&straight, "straight", 0, "Integer >= 0. Higher numbers make straighter hallways")
 	flag.Int64Var(&twisty, "twisty", 0, "Integer >= 0. Higher numbers make twistier hallways")
