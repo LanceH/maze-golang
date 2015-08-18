@@ -37,12 +37,17 @@ var footer int64
 var output = "output"
 
 var solve bool
-var ascii = false
+var perfect bool
+var ascii bool
 
 func main() {
 	fmt.Printf("Maze: %d by %d\n", cols, rows)
 	fmt.Printf("Seed: %d, straight: %d\n", seed, straight)
 	create(cols, rows)
+	if perfect {
+		solve = false
+		toPerfect()
+	}
 	if ascii {
 		toAscii()
 	} else {
@@ -76,6 +81,7 @@ func loadFlags() {
 	flag.Int64Var(&seed, "seed", -1, "Integer value for the random seed")
 	flag.BoolVar(&ascii, "ascii", true, "true produces an ascii art version of the maze")
 	flag.BoolVar(&solve, "solve", false, "true to produce a graphic of the solution")
+	flag.BoolVar(&perfect, "perfect", false, "Convert the maze to a labyrinth (only one path)")
 
 	flag.Parse()
 }
@@ -196,6 +202,11 @@ func create(cols, rows int64) {
 			count++
 		}
 	}
+}
+
+func toPerfect() {
+	pMaze := make([]int64, cells*cells)
+	maze = pMaze
 }
 
 func toPng() {
