@@ -206,28 +206,38 @@ func create(cols, rows int64) {
 }
 
 func toUnicursal() {
-	pMaze := make([]int64, cells*cells)
+	pMaze := make([]int64, cells*4)
 	for i := int64(0); i < rows; i++ {
 		for j := int64(0); j < cols; j++ {
 			current := i*cols + j
-			fmt.Println(current, 2*i*cols+2*j)
+			ul := 4*i*cols + 2*j
+			ur := 4*i*cols + 2*j + 1
+			ll := 4*i*cols + 2*cols + 2*j
+			lr := 4*i*cols + 2*cols + 2*j + 1
+			fmt.Println(current, ul, ur, ll, lr)
 			if 0 != maze[current]&north {
-				pMaze[2*i*cols+2*j] |= north
-				pMaze[2*i*cols+2*j-2*cols] |= south
-				pMaze[2*i*cols+2*j+1] |= north
-				pMaze[2*i*cols+2*j+1-2*cols] |= south
+				pMaze[ul] |= north
+				pMaze[ul-2*cols] |= south
+				pMaze[ur] |= north
+				pMaze[ur-2*cols] |= south
 			}
 			if 0 != maze[current]&east {
-				pMaze[2*i*cols+2*j+1] |= east
-				pMaze[2*i*cols+cols+2*i+1] |= east
+				pMaze[ur] |= east
+				pMaze[ur+1] |= west
+				pMaze[lr] |= east
+				pMaze[lr+1] |= west
 			}
 			if 0 != maze[current]&south {
-				pMaze[2*i*cols+cols+2*j] |= south
-				pMaze[2*i*cols+cols+2*j+1] |= south
+				pMaze[ll] |= south
+				pMaze[lr] |= south
+				pMaze[ll+2*cols] |= north
+				pMaze[lr+2*cols] |= north
 			}
 			if 0 != maze[current]&west {
-				pMaze[2*i*cols+2*j] |= west
-				pMaze[2*i*cols+cols+2*j] |= west
+				pMaze[ul] |= west
+				pMaze[ll] |= west
+				pMaze[ul-1] |= east
+				pMaze[ll-1] |= east
 			}
 		}
 	}
