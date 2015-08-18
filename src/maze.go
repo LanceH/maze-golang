@@ -37,16 +37,17 @@ var footer int64
 var output = "output"
 
 var solve bool
-var perfect bool
+var unicursal bool
 var ascii bool
 
 func main() {
 	fmt.Printf("Maze: %d by %d\n", cols, rows)
 	fmt.Printf("Seed: %d, straight: %d\n", seed, straight)
 	create(cols, rows)
-	if perfect {
+	if unicursal {
 		solve = false
-		toPerfect()
+		toUnicursal()
+		fmt.Println(maze)
 	}
 	if ascii {
 		toAscii()
@@ -81,7 +82,7 @@ func loadFlags() {
 	flag.Int64Var(&seed, "seed", -1, "Integer value for the random seed")
 	flag.BoolVar(&ascii, "ascii", true, "true produces an ascii art version of the maze")
 	flag.BoolVar(&solve, "solve", false, "true to produce a graphic of the solution")
-	flag.BoolVar(&perfect, "perfect", false, "Convert the maze to a labyrinth (only one path)")
+	flag.BoolVar(&unicursal, "unicursal", false, "Convert the maze to a labyrinth (only one path)")
 
 	flag.Parse()
 }
@@ -204,9 +205,35 @@ func create(cols, rows int64) {
 	}
 }
 
-func toPerfect() {
+func toUnicursal() {
 	pMaze := make([]int64, cells*cells)
+	for i := int64(0); i < rows; i++ {
+		for j := int64(0); j < cols; j++ {
+			current := i*cols + j
+			fmt.Println(current, 2*i*cols+2*j)
+			if 0 != maze[current]&north {
+				pMaze[2*i*cols+2*j] |= north
+				pMaze[2*i*cols+2*j-2*cols] |= south
+				pMaze[2*i*cols+2*j+1] |= north
+				pMaze[2*i*cols+2*j+1-2*cols] |= south
+			}
+			if 0 != maze[current]&east {
+				pMaze[2*i*cols+2*j+1] |= east
+				pMaze[2*i*cols+cols+2*i+1] |= east
+			}
+			if 0 != maze[current]&south {
+				pMaze[2*i*cols+cols+2*j] |= south
+				pMaze[2*i*cols+cols+2*j+1] |= south
+			}
+			if 0 != maze[current]&west {
+				pMaze[2*i*cols+2*j] |= west
+				pMaze[2*i*cols+cols+2*j] |= west
+			}
+		}
+	}
 	maze = pMaze
+	rows *= 2
+	cols *= 2
 }
 
 func toPng() {
