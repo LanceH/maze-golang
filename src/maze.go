@@ -47,7 +47,6 @@ func main() {
 	if unicursal {
 		solve = false
 		toUnicursal()
-		fmt.Println(maze)
 	}
 	if ascii {
 		toAscii()
@@ -214,30 +213,41 @@ func toUnicursal() {
 			ur := 4*i*cols + 2*j + 1
 			ll := 4*i*cols + 2*cols + 2*j
 			lr := 4*i*cols + 2*cols + 2*j + 1
-			fmt.Println(current, ul, ur, ll, lr)
 			if 0 != maze[current]&north {
 				pMaze[ul] |= north
 				pMaze[ul-2*cols] |= south
 				pMaze[ur] |= north
 				pMaze[ur-2*cols] |= south
+			} else {
+				pMaze[ul] |= east
+				pMaze[ur] |= west
 			}
 			if 0 != maze[current]&east {
 				pMaze[ur] |= east
 				pMaze[ur+1] |= west
 				pMaze[lr] |= east
 				pMaze[lr+1] |= west
+			} else {
+				pMaze[ur] |= south
+				pMaze[lr] |= north
 			}
 			if 0 != maze[current]&south {
 				pMaze[ll] |= south
 				pMaze[lr] |= south
 				pMaze[ll+2*cols] |= north
 				pMaze[lr+2*cols] |= north
+			} else {
+				pMaze[ll] |= east
+				pMaze[lr] |= west
 			}
 			if 0 != maze[current]&west {
 				pMaze[ul] |= west
 				pMaze[ll] |= west
 				pMaze[ul-1] |= east
 				pMaze[ll-1] |= east
+			} else {
+				pMaze[ul] |= south
+				pMaze[ll] |= north
 			}
 		}
 	}
@@ -283,9 +293,9 @@ func toAscii() {
 	for i := int64(0); i < rows; i++ {
 		p("|")
 		for j := int64(0); j < cols; j++ {
-			if start == i*cols+j {
+			if !unicursal && start == i*cols+j {
 				p(" 0 ")
-			} else if finish == i*cols+j {
+			} else if !unicursal && finish == i*cols+j {
 				p(" X ")
 			} else if dots[j+cols*i] && solve {
 				p(" o ")
