@@ -258,6 +258,7 @@ func toUnicursal() {
 
 func toPng() {
 	f, err := os.OpenFile("output/maze.png", os.O_CREATE|os.O_WRONLY, 0666)
+	fmt.Println("Building image")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -269,6 +270,14 @@ func toPng() {
 	for i := 0; i < width; i++ {
 		for j := 0; j < height; j++ {
 			m.SetRGBA(i, j, color.RGBA{255, 255, 255, 255})
+		}
+	}
+
+	for i := int64(0); i < cols; i++ {
+		for j := int64(0); j < rows; j++ {
+			if i%cols == 0 {
+				drawVert(m, 3, 3, 12, color.RGBA{0, 0, 0, 0})
+			}
 		}
 	}
 
@@ -333,4 +342,16 @@ func dd() {
 
 func p(a string) {
 	fmt.Print(a)
+}
+
+func drawVert(m *image.RGBA, x, y, d int, col color.RGBA) {
+	for i := 0; i < d; i++ {
+		m.SetRGBA(x, y+i, col)
+	}
+}
+
+func drawHoriz(m *image.RGBA, x, y, d int, col color.RGBA) {
+	for i := 0; i < d; i++ {
+		m.SetRGBA(x+i, y, col)
+	}
 }
